@@ -1,0 +1,1272 @@
+:root {
+  --color-primario: #1b396a;
+  --color-primario-hover: #12274b;
+  --color-fondo: #f8fafc;
+  --color-blanco: #ffffff;
+
+  --texto-oscuro: #1e293b;
+  --texto-gris: #64748b;
+  --texto-etiqueta: #94a3b8;
+
+  --borde-gris: #e2e8f0;
+
+  /* Colores de estado */
+  --color-exito: #10b981;
+  --color-exito-bg: #ecfdf5;
+  --color-peligro: #f43f5e;
+  --color-peligro-bg: #fff1f2;
+  --color-info: #3b82f6;
+  --color-info-bg: #eff6ff;
+  --color-morado: #8b5cf6;
+  --color-morado-bg: #f5f3ff;
+  --color-espera: #eab308;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Montserrat", sans-serif;
+  background-color: var(--color-fondo);
+  color: var(--texto-oscuro);
+  line-height: 1.5;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ================= ENCABEZADO MÓVIL ================= */
+.mobile-header {
+  display: none; /* Por defecto oculto en escritorio */
+}
+
+/* ================= BARRA LATERAL (SIDEBAR) ================= */
+.sidebar {
+  width: 260px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-right: 1px solid var(--borde-gris);
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1.5rem;
+  flex-shrink: 0;
+  z-index: 50;
+  transition: left 0.3s ease-in-out;
+  box-shadow: 4px 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.logo-inst {
+  width: 160px; /* Aumentado de 160px a 200px */
+  height: auto;
+  object-fit: contain;
+}
+
+/* Navegación de la barra lateral */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--texto-gris);
+  font-weight: 600;
+  font-family: inherit;
+  font-size: 0.9rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+}
+
+.nav-btn svg {
+  width: 20px;
+  height: 20px;
+}
+.nav-btn.active {
+  background-color: #f0f4ff; /* Ejemplo: un fondo suave */
+  color: #2563eb; /* Ejemplo: texto azul */
+  scale: 1.02;
+}
+.nav-btn.active:hover {
+  background-color: #f0f4ff; /* Ejemplo: un fondo suave */
+  color: #2563eb; /* Ejemplo: texto azul */
+}
+
+/* Opcional: Estilo para el icono cuando está activo */
+.nav-btn.active svg {
+  stroke: #2563eb;
+}
+.nav-btn:hover {
+  background: var(--color-info-bg);
+  color: var(--color-primario);
+}
+
+.sidebar-footer {
+  margin-top: 1rem;
+}
+
+.btn-outline-danger {
+  background: transparent;
+  border: 1px solid var(--borde-gris);
+  color: var(--texto-gris);
+  font-weight: 700;
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-outline-danger:hover {
+  color: var(--color-peligro);
+  background: var(--color-peligro-bg);
+  border-color: #fecdd3;
+}
+
+.w-full {
+  width: 100%;
+}
+
+/* ================= CONTENEDORES PRINCIPALES ================= */
+.contenedor-principal {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+  position: relative;
+}
+
+#panel-info,
+#panel-progreso,
+#panel-kardex {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 1.5rem;
+}
+
+.tarjeta {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--color-blanco);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.grid-2-col {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+/* ================= PANEL INFO & AVATAR ================= */
+.avatar-container {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid var(--color-blanco);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+  background-color: var(--color-info-bg);
+}
+
+.avatar-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.avatar-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-info);
+}
+.avatar-fallback svg {
+  width: 50%;
+  height: 50%;
+}
+
+.info-container {
+  flex: 1;
+}
+
+.texto-etiqueta {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--texto-etiqueta);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.25rem;
+}
+
+.texto-titulo {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--color-primario);
+  margin-bottom: 0.75rem;
+}
+
+.info-detalles {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.badge-detalle {
+  background: var(--color-blanco);
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--texto-gris);
+  border: 1px solid var(--borde-gris);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dot-azul {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-primario);
+}
+.dot-celeste {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-info);
+}
+
+.status-container {
+  width: 100%;
+  margin-top: 1rem;
+}
+@media (min-width: 768px) {
+  .status-container {
+    width: auto;
+    margin-top: 0;
+  }
+}
+
+/* ================= BADGES DE ESTADO (LIBERACIÓN) ================= */
+.badge-liberado {
+  background: var(--color-info);
+  color: var(--color-blanco);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 800;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+.badge-esperando {
+  background: var(--color-blanco);
+  color: var(--color-info);
+  border: 1px solid var(--color-info);
+  padding: 0.75rem 1.5rem;
+  border-radius: 2rem;
+  font-weight: 800;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-align: center;
+  animation: pulse 2s infinite;
+}
+.badge-progreso {
+  background: var(--color-fondo);
+  color: var(--texto-gris);
+  border: 1px solid var(--borde-gris);
+  padding: 0.75rem 1.5rem;
+  border-radius: 2rem;
+  font-weight: 800;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ================= TARJETAS DE PROGRESO ================= */
+.tarjeta-progreso {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  border: 1px solid var(--color-blanco);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+.texto-contador {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--color-primario);
+}
+.icono-bg {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icono-bg:hover {
+  scale: 1.1;
+  animation: shake 0.3s ease-in-out 0s 1; /* 2 repeticiones */
+  box-shadow: 0px 4px 12px -10px rgba(0, 0, 0, 0.747);
+}
+@keyframes shake {
+  0% {
+    transform: rotate(0deg);
+  }
+  33% {
+    transform: rotate(-10deg);
+  } /* Movimiento 1: Izquierda */
+  66% {
+    transform: rotate(10deg);
+  } /* Movimiento 2: Derecha */
+  100% {
+    transform: rotate(0deg);
+  } /* Movimiento 3: Regreso al centro */
+}
+
+/* Ejemplo de aplicación */
+.element {
+  display: inline-block;
+  animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.item:hover {
+  animation: shake 0.3s ease-in-out 0s 2; /* 2 repeticiones */
+}
+
+.bg-azul {
+  background: var(--color-info-bg);
+  color: var(--color-info);
+  border: 1px solid #dbeafe;
+}
+.bg-morado {
+  background: var(--color-morado-bg);
+  color: var(--color-morado);
+  border: 1px solid #ede9fe;
+}
+
+/* ================= KARDEX ================= */
+.subtitulo {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--color-primario);
+  margin-bottom: 1.25rem;
+}
+.item-actividad {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  border-radius: 1rem;
+  border: 1px solid;
+  flex-wrap: wrap;
+  gap: 1rem;
+  transition: all 0.2s;
+}
+.item-actividad:hover {
+  scale: 1.01;
+  box-shadow: 0px 4px 12px -10px rgba(0, 0, 0, 0.747);
+}
+.act-izq {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.act-icono {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-fondo);
+}
+.act-nombre {
+  font-weight: 700;
+  color: var(--texto-oscuro);
+  font-size: 0.95rem;
+}
+.act-estado-contenedor {
+  display: flex;
+  justify-content: flex-end;
+}
+.act-estado {
+  padding: 0.35rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+  min-width: 120px;
+  border: 1px solid transparent;
+}
+
+/* Clases inyectadas desde JS */
+.bg-blanco {
+  background: rgba(255, 255, 255, 0.6);
+}
+.bg-azul-claro {
+  background: var(--color-info-bg);
+}
+.bg-gris-claro {
+  background: var(--color-fondo);
+}
+.border-gris {
+  border-color: var(--borde-gris);
+}
+.border-azul {
+  border-color: #bfdbfe;
+}
+.texto-primario {
+  color: var(--color-primario);
+}
+.texto-morado {
+  color: var(--color-morado);
+}
+.texto-azul {
+  color: var(--color-info);
+}
+.texto-gris-oscuro {
+  color: var(--texto-gris);
+}
+.badge-aprobado {
+  background: var(--color-exito-bg);
+  color: var(--color-exito);
+  border-color: #a7f3d0;
+}
+.badge-reprobado {
+  background: var(--color-peligro-bg);
+  color: var(--color-peligro);
+  border-color: #fecdd3;
+}
+.badge-liberado-outline {
+  background: var(--color-blanco);
+  color: var(--color-info);
+  border-color: var(--color-info);
+}
+.badge-cursando {
+  background: var(--color-blanco);
+  color: var(--texto-gris);
+  border-color: var(--borde-gris);
+}
+
+/* ... (Todo tu CSS anterior se mantiene igual) ... */
+
+/* ================= MODAL ADJUNTAR PDF ================= */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: white;
+  width: 100%;
+  max-width: 450px;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  animation: modalIn 0.3s ease-out;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--borde-gris);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  padding: 1.25rem 1.5rem;
+  background: var(--color-fondo);
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+/* Área de Drop & Drag */
+.drop-area {
+  border: 2px dashed var(--borde-gris);
+  border-radius: 1rem;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--color-fondo);
+}
+
+.drop-area:hover,
+.drop-area.active {
+  border-color: var(--color-info);
+  background: var(--color-info-bg);
+}
+
+.drop-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--texto-gris);
+}
+
+.drop-content p {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.file-name-display {
+  font-size: 0.75rem;
+  color: var(--color-info);
+  font-weight: 700;
+  margin-top: 0.5rem;
+}
+.act-estado {
+  padding: 0.35rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+  min-width: 120px;
+  border: 1px solid transparent;
+}
+/* Botones específicos */
+.btn-adjuntar {
+  background: var(--color-info-bg);
+  color: var(--color-info);
+  border: 1px solid #bfdbfe;
+  margin-right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0.35rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+  min-width: 120px;
+}
+
+.btn-adjuntar:hover {
+  background: var(--color-info);
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0px 4px 12px -10px rgba(0, 0, 0, 0.747);
+}
+/* Clase para el estado 'Ver' del botón */
+.btn-ver {
+  background: var(--color-info-bg);
+  color: var(--color-info);
+  border: 1px solid #bfdbfe;
+  margin-right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0.35rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+  min-width: 120px;
+}
+
+/* Efecto hover idéntico al de adjuntar pero en azul */
+.btn-ver:hover {
+  background: var(--color-info) !important;
+  color: white !important;
+  transform: scale(1.05) !important;
+}
+.btn-primario-dis {
+  background: var(--color-primario);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-primario-dis:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.act-estado-contenedor {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+/* ================= CHATBOT GLASSMORPHISM UPDATED ================= */
+.chatbot-wrapper {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.chat-window {
+  /* Fondo semi-transparente y desenfoque */
+  background: rgba(255, 255, 255, 0.581);
+  backdrop-filter: blur(8px) saturate(180%);
+  -webkit-backdrop-filter: blur(15px) saturate(180%);
+
+  /* Borde sutil estilo "cristal" */
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 1.5rem;
+
+  width: 390px;
+  height: 550px;
+  margin-bottom: 1rem;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.chat-header {
+  /* Gradiente con transparencia para no perder el efecto glass */
+  background: linear-gradient(
+    135deg,
+    rgb(0, 46, 110),
+    rgba(30, 64, 175, 0.716)
+  );
+  backdrop-filter: blur(5px);
+  color: var(--color-blanco);
+  padding: 1.2rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chat-header-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.chat-avatar {
+  width: 2.2rem;
+  height: 2.2rem;
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-blanco);
+}
+
+.chat-nombre {
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: capitalize;
+  letter-spacing: 0.05em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chat-estado {
+  font-size: 0.65rem;
+  color: #d1e2ff;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.chat-estado::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: #10b981;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.chat-close {
+  background: rgba(255, 255, 255, 0.285);
+  border: none;
+  color: white;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.chat-close:hover {
+  background: rgba(255, 255, 255, 0.461);
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 1.25rem;
+  overflow-y: auto;
+  /* Fondo muy ligero para que el texto sea legible */
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.chat-faq {
+  padding: 1rem;
+  /* El área de FAQ también hereda el efecto cristal */
+  background: rgba(255, 255, 255, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.faq-titulo {
+  margin-bottom: 0.75rem;
+  color: var(--color-primario);
+  font-size: 0.7rem;
+}
+
+.chat-bubbles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+/* Burbujas de sugerencia estilo glass */
+.chat-bubbles button,
+.faq-item {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.8rem;
+  font-size: 0.75rem;
+  color: var(--color-primario);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+  font-family: inherit;
+  font-weight: 500;
+}
+
+.chat-bubbles button:hover {
+  background: var(--color-blanco);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.chat-toggle-btn {
+  width: 3.8rem;
+  height: 3.8rem;
+  background: var(--color-primario);
+  color: var(--color-blanco);
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(32, 80, 157, 0.566);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.chat-toggle-btn:hover {
+  transform: scale(1.1) rotate(10deg);
+  background: var(--color-primario-hover);
+}
+
+/* Scrollbar personalizado para el chat */
+.chat-messages::-webkit-scrollbar,
+.chat-bubbles::-webkit-scrollbar {
+  width: 4px;
+}
+.chat-messages::-webkit-scrollbar-thumb,
+.chat-bubbles::-webkit-scrollbar-thumb {
+  background: rgba(27, 57, 106, 0.2);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+/* ==========================================================================
+   SECCIÓN DE CALENDARIO Y NOTAS (UNIFICADO)
+   ========================================================================== */
+
+#section-calendario {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  transition: all 0.3s ease;
+}
+
+#section-calendario:hover {
+  scale: 1.005;
+  box-shadow: 0px 4px 12px -10px rgba(0, 0, 0, 0.852);
+}
+
+/* Contenedor de cabecera (Mes y Botones) */
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Título del mes: Aumenta el tamaño si lo sientes pequeño */
+#calendar-month-year {
+  margin-bottom: 0;
+  font-size: 1.2rem;
+  text-transform: capitalize;
+}
+
+/* Botones de navegación < y > */
+.btn-nav-cal {
+  background: var(--color-info-bg);
+  border: 1px solid #bfdbfe;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 1rem; /* Tamaño de las flechas */
+  color: var(--color-info);
+  transition: all 0.2s ease;
+}
+.btn-nav-cal svg {
+  width: 20px;
+  height: 20px;
+}
+.btn-nav-cal:hover {
+  background: var(--color-info);
+  color: white;
+}
+
+/* Cabecera de días (D, L, M...) */
+.calendar-grid-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  align-items: space-between;
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--texto-gris);
+  margin-bottom: 12px;
+  margin-left: -0.9% !important;
+  margin-right: -0.9% !important;
+}
+
+/* Cuadrícula del calendario */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 16px; /* Espacio entre celdas: redúcelo para pegar más los días */
+}
+
+/* Celda de día individual */
+.calendar-day {
+  /* CONTROL DE TAMAÑO: aspect-ratio controla la forma. 
+       1/1 es un cuadrado perfecto. 1.2/1 lo hace más bajito (menos alto). */
+  aspect-ratio: 1.5 / 1;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--borde-gris);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  font-weight: 400;
+  transition: all 0.2s ease;
+
+  /* CONTROL DE NÚMEROS: Aquí cambias el tamaño de los números del calendario */
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--texto-oscuro);
+}
+
+.calendar-day:hover {
+  background: var(--color-info-bg);
+  border-color: var(--color-info);
+  transform: translateY(-2px);
+  z-index: 10;
+}
+
+/* Estilo para días festivos/feriados */
+.day-feriado {
+  background: #fee2e2 !important;
+  color: #ef4444 !important;
+  border-color: #fecaca !important;
+}
+
+/* Indicador de nota (el punto morado) */
+.note-indicator {
+  width: 6px;
+  height: 6px;
+  background: #8b5cf6;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 8px; /* Qué tan cerca del borde inferior está el punto */
+}
+/* Colores de categorías */
+.cat-tarea { border-left: 4px solid #f59e0b !important; background: #fffbeb; }
+.cat-examen { border-left: 4px solid #ef4444 !important; background: #fef2f2; }
+.cat-nota { border-left: 4px solid #3b82f6 !important; background: #eff6ff; }
+.cat-otro { border-left: 4px solid #6b7280 !important; background: #f9fafb; }
+
+.act-icono-svg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  margin-right: 12px;
+}
+
+.bg-tarea { background: #fef3c7; color: #d97706; }
+.bg-examen { background: #fee2e2; color: #dc2626; }
+.bg-nota { background: #dbeafe; color: #2563eb; }
+.bg-otro { background: #f3f4f6; color: #4b5563; }
+/* Leyenda debajo del calendario */
+.calendar-legend {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--texto-gris);
+}
+
+/* ==========================================================================
+   RESPONSIVE: AJUSTES PARA MÓVIL
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  /* En móvil, permitimos que las celdas sean un poco más altas para que 
+       sean fáciles de tocar con el dedo */
+  .calendar-day {
+    aspect-ratio: 1 / 1;
+    font-size: 0.725rem; /* Números un poco más pequeños en móvil */
+    border-radius: 8px;
+  }
+
+  .calendar-grid {
+    gap: 4px; /* Menos espacio entre días en pantallas pequeñas */
+  }
+
+  .calendar-header {
+    flex-direction: row;
+    gap: 1rem;
+  }
+
+  #calendar-month-year {
+    font-size: 1rem;
+  }
+
+  /* Ajuste de la leyenda para que no se amontone */
+  .calendar-legend {
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+  .tarjeta > .calendar-grid-header {
+    margin-left: -5% !important;
+    margin-right: -5% !important;
+    font-size: 0.65rem !important;
+  }
+  .tarjeta > .calendar-grid {
+    margin-left: -5% !important;
+    margin-right: -5% !important;
+  }
+}
+
+/* ==========================================================================
+   ESTILOS DE LA SECCIÓN DE NOTAS
+   ========================================================================== */
+
+/* Estilos específicos para el modal de notas */
+.nota-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.9rem;
+  resize: none;
+  transition: border-color 0.3s ease;
+  outline: none;
+}
+
+.nota-textarea:focus {
+  border-color: #3b82f6;
+}
+
+.btn-primario {
+  background: #3b82f6;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primario:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.item-actividad.nota-item {
+  transition: transform 0.2s ease;
+}
+
+.item-actividad.nota-item:hover {
+  transform: scale(1.02);
+}
+
+/* Botón de borrar nota (Rojo suave) */
+.btn-delete-nota {
+  padding: 6px 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 6px;
+  background: var(--color-peligro-bg);
+  color: var(--color-peligro);
+  border: 1px solid #fecdd3;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-delete-nota:hover {
+  background: var(--color-peligro);
+  color: white;
+}
+/* ================= DISEÑO RESPONSIVO (MÓVILES) ================= */
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  /* Barra Superior Fija */
+  .mobile-header {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: var(--color-blanco);
+    border-bottom: 1px solid var(--borde-gris);
+    padding: 0 1rem;
+    align-items: center;
+    justify-content: flex-start; /* Alineado a la izquierda */
+    gap: 1.5rem; /* Separación entre el botón y el logo */
+    z-index: 60;
+  }
+
+  .btn-menu {
+    background: transparent;
+    border: none;
+    color: var(--color-primario);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+  }
+  .btn-menu:active {
+    background: var(--color-fondo);
+  }
+
+  .logo-inst-mobile {
+    height: 50px; /* Aumentado de 40px a 50px */
+    width: auto;
+    object-fit: contain;
+  }
+
+  /* Barra Lateral como "Dropdown" Deslizable por debajo */
+  .sidebar {
+    position: fixed;
+    top: 70px;
+    bottom: 0;
+    left: -100%;
+    width: 260px;
+    background: rgba(255, 255, 255, 0.98);
+    border-right: 1px solid var(--borde-gris);
+    box-shadow: 4px 10px 20px rgba(0, 0, 0, 0.05);
+    padding-top: 1rem;
+    z-index: 50;
+  }
+  .sidebar.active {
+    left: 0;
+  }
+
+  /* Compensar contenido por la barra fija */
+  .contenedor-principal {
+    padding: 1rem;
+    margin-top: 70px;
+  }
+
+  /* Centrar Avatar e Información en móviles */
+  #panel-info.flex-row {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.25rem;
+  }
+
+  .avatar-container {
+    margin: 0 auto;
+    width: 130px;
+    height: 130px;
+  }
+
+  .info-detalles {
+    justify-content: center;
+  }
+
+  .status-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+}
+/* ================= RESPONSIVE CHATBOT ================= */
+@media (max-width: 768px) {
+  .chatbot-wrapper {
+    bottom: 1rem;
+    right: 1rem;
+  }
+
+  .chat-window {
+    /* Ajuste de tamaño para tablets y móviles grandes */
+    width: calc(100vw - 2rem);
+    max-width: 360px;
+    height: 550px;
+
+    /* Suavizamos el desenfoque en móvil para ahorrar batería/rendimiento */
+    backdrop-filter: blur(10px) saturate(150%);
+    -webkit-backdrop-filter: blur(10px) saturate(150%);
+  }
+
+  .chat-header {
+    padding: 1rem;
+  }
+
+  .chat-nombre {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-window {
+    /* En celulares pequeños, casi pantalla completa */
+    width: calc(85vw - 1.5rem);
+    height: 65vh;
+    bottom: 0.5rem;
+    border-radius: 1.25rem;
+  }
+
+  .chat-toggle-btn {
+    width: 3.2rem;
+    height: 3.2rem;
+  }
+
+  .chat-bubbles {
+    max-height: 100px; /* Reducimos espacio de FAQ para ver más mensajes */
+  }
+}

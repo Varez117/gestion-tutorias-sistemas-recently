@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SIT - Portal Docente</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/alumno/styles.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+
+    <script>
+      // Configuración crítica para que PDF.js funcione
+      if (window["pdfjs-dist/build/pdf"]) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js";
+      }
+    </script>
+  </head>
+  <body id="page-tutor">
+    <header class="mobile-header">
+      <button id="btn-menu" class="btn-menu">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <img src="assets/img/tecnm.svg" alt="Logo" class="logo-inst-mobile" />
+    </header>
+
+    <aside id="sidebar" class="sidebar">
+      <div class="logo-container desktop-only">
+        <img src="assets/img/tecnm.svg" alt="Logo" class="logo-inst" />
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-btn" id="nav-perfil">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          Mi Portal
+        </button>
+        <button class="nav-btn" id="nav-calendario">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          Calendario
+        </button>
+        <button class="nav-btn" id="nav-notas">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+            ></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+          Mis Notas
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <button
+          id="btn-salir"
+          class="btn-outline-danger w-full"
+          onclick="window.cerrarSesion()"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span>Salir</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="contenedor-principal">
+      <div id="section-perfil" class="content-section">
+        <section id="panel-info" class="tarjeta flex-row">
+          <div
+            class="avatar-container"
+            id="avatar-perfil-usuario"
+            style="position: relative; overflow: hidden; border-radius: 50%;
+            "
+          >
+            <div
+              class="avatar-fallback"
+              style="
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #f1f5f9;
+                border-radius: 50%;
+                color: #94a3b8;
+              "
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                style="width: 60%; height: 60%"
+              >
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+          </div>
+          <div class="info-container">
+            <p id="lbl-area" class="texto-etiqueta">Cargando...</p>
+            <h2 id="lbl-nombre" class="texto-titulo">--</h2>
+            <div class="info-detalles">
+              <span class="badge-detalle"
+                >No. Empleado: <span id="lbl-empleado">--</span></span
+              >
+              <span class="badge-detalle"
+                >Horario: <span id="lbl-horario">--</span></span
+              >
+            </div>
+          </div>
+        </section>
+
+        <section class="tarjeta" style="margin-top: 2rem">
+          <div
+            class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6"
+          >
+            <h3 class="subtitulo" style="margin: 0">Alumnos bajo mi Tutoría</h3>
+
+            <div class="flex flex-wrap gap-2 w-full md:w-auto">
+              <input
+                type="text"
+                id="busqueda-alumno"
+                placeholder="Buscar por nombre o matrícula..."
+                class="nota-textarea"
+                style="
+                  height: 38px;
+                  width: 220px;
+                  font-size: 0.8rem;
+                  margin: 0;
+                  padding: 0 12px;
+                "
+              />
+
+              <select
+                id="filtro-semestre"
+                class="nota-textarea"
+                style="
+                  height: 38px;
+                  width: auto;
+                  font-size: 0.8rem;
+                  margin: 0;
+                  padding: 0 8px;
+                "
+              >
+                <option value="all">Todos los Semestres</option>
+                <option value="1">1° Semestre</option>
+                <option value="2">2° Semestre</option>
+                <option value="3">3° Semestre</option>
+                <option value="4">4° Semestre</option>
+                <option value="5">5° Semestre</option>
+                <option value="6">6° Semestre</option>
+                <option value="7">7° Semestre</option>
+                <option value="8">8° Semestre</option>
+                <option value="9">9° Semestre</option>
+              </select>
+
+              <select
+                id="filtro-estatus"
+                class="nota-textarea"
+                style="
+                  height: 38px;
+                  width: auto;
+                  font-size: 0.8rem;
+                  margin: 0;
+                  padding: 0 8px;
+                "
+              >
+                <option value="all">Todos los Estatus</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="evaluar">Por Evaluar</option>
+                <option value="liberado">Liberado</option>
+              </select>
+
+              <button
+                id="btn-reset-filtros"
+                class="btn-reset"
+                title="Limpiar Filtros"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M23 4v6h-6"></path>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div id="lista-tutorados" class="kardex-lista"></div>
+        </section>
+      </div>
+
+      <div
+        id="section-calendario"
+        class="content-section"
+        style="display: none"
+      >
+        <section class="tarjeta">
+          <div class="calendar-header">
+            <h3 class="subtitulo" id="calendar-month-year">--</h3>
+            <div class="calendar-controls">
+              <button id="prev-month" class="btn-nav-cal"><</button>
+              <button id="next-month" class="btn-nav-cal">></button>
+            </div>
+          </div>
+          <div class="calendar-grid-header">
+            <div>D</div>
+            <div>L</div>
+            <div>M</div>
+            <div>M</div>
+            <div>J</div>
+            <div>V</div>
+            <div>S</div>
+          </div>
+          <div id="calendar-grid" class="calendar-grid"></div>
+        </section>
+      </div>
+
+      <div id="section-notas" class="content-section" style="display: none">
+        <section class="tarjeta">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="subtitulo" style="margin: 0">Mis Notas</h3>
+            <button id="btn-nueva-nota" class="btn-adjuntar">
+              + Nueva Nota
+            </button>
+          </div>
+          <div id="lista-notas" class="kardex-lista"></div>
+        </section>
+      </div>
+      <div id="modal-expediente" class="modal-overlay" style="display: none">
+        <div class="modal-content" style="max-width: 600px">
+          <div class="modal-header">
+            <div>
+              <h3 class="texto-titulo" style="font-size: 1.2rem; margin: 0">
+                Expediente Académico
+              </h3>
+              <p
+                id="exp-matricula"
+                class="texto-etiqueta"
+                style="margin: 0"
+              ></p>
+            </div>
+            <button id="btn-close-expediente" class="chat-close">
+              &times;
+            </button>
+          </div>
+          <div class="modal-body">
+            <div
+              class="flex justify-between items-center mb-4 p-3 bg-slate-50 rounded-xl"
+            >
+              <div>
+                <p class="text-xs text-slate-500 uppercase font-bold">Alumno</p>
+                <p id="exp-nombre" class="font-bold text-slate-800"></p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs text-slate-500 uppercase font-bold">
+                  Promedio
+                </p>
+                <p id="exp-promedio" class="font-bold text-[#1b396a]"></p>
+              </div>
+            </div>
+
+            <h4 class="text-sm font-bold text-slate-700 mb-2">
+              Historial de Actividades
+            </h4>
+            <div
+              id="exp-lista-actividades"
+              class="kardex-lista"
+              style="max-height: 250px; overflow-y: auto"
+            ></div>
+          </div>
+          <div class="modal-footer" id="exp-footer"></div>
+        </div>
+      </div>
+    </main>
+
+    <div id="modal-nota" class="modal-overlay" style="display: none">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="texto-titulo" style="font-size: 1.2rem; margin: 0">
+            Nueva Nota
+          </h3>
+          <button id="btn-close-modal-nota" class="chat-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p
+            id="nota-fecha-display"
+            class="texto-etiqueta"
+            style="margin-bottom: 1rem; color: #1b396a"
+          ></p>
+          <div class="input-group" style="margin-bottom: 1rem">
+            <label class="texto-etiqueta">Categoría:</label>
+            <select
+              id="sel-nota-categoria"
+              class="nota-textarea"
+              style="padding: 8px; height: auto"
+            >
+              <option value="nota">📝 Nota</option>
+              <option value="seguimiento">📚 Seguimiento</option>
+              <option value="urgente">🎯 Urgente</option>
+            </select>
+          </div>
+          <textarea
+            id="txt-nota-contenido"
+            rows="4"
+            class="nota-textarea"
+            placeholder="Escribir observaciones..."
+          ></textarea>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-cancelar-nota" class="btn-outline-danger">
+            Cancelar
+          </button>
+          <button id="btn-guardar-nota" class="btn-primario">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="chatbot-wrapper" class="chatbot-wrapper">
+      <div id="chat-window" class="chat-window" style="display: none">
+        <div class="chat-header">
+          <div class="chat-header-info">
+            <div class="chat-avatar">🤖</div>
+            <div>
+              <h3 class="chat-nombre">Sussan (Docente)</h3>
+              <p class="chat-estado">En línea</p>
+            </div>
+          </div>
+          <button id="close-chat-btn" class="chat-close">&times;</button>
+        </div>
+        <div id="chat-messages" class="chat-messages"></div>
+        <div class="chat-faq">
+          <p class="texto-etiqueta faq-titulo">Acciones Rápidas</p>
+          <div id="chat-bubbles" class="chat-bubbles"></div>
+        </div>
+      </div>
+      <button id="open-chat-btn" class="chat-toggle-btn">💬</button>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>

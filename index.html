@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TecNM - Accesos</title>
+    <link rel="stylesheet" href="styles/index/toast.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap");
+
+      body {
+        font-family: "Montserrat", sans-serif;
+        background-color: #f8fafc;
+        overflow-x: hidden;
+      }
+
+      .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 1);
+      }
+
+      
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  </head>
+
+  <body
+    id="page-login"
+    class="min-h-screen flex flex-col items-center justify-center relative px-4 py-8"
+  >
+    <div
+      class="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-200/50 rounded-full blur-[100px] z-0 pointer-events-none"
+    ></div>
+    <div
+      class="fixed bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-indigo-200/50 rounded-full blur-[100px] z-0 pointer-events-none"
+    ></div>
+
+    <div class="z-10 text-center mb-10 w-full">
+      <div
+        class="inline-flex items-center space-x-2 mb-4 bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full border border-slate-200 shadow-sm"
+      >
+        <span
+          class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"
+        ></span>
+
+        <span
+          class="text-[10px] font-bold tracking-widest uppercase text-[#1b396a]"
+        >
+          Demo Funcional
+        </span>
+      </div>
+
+      <h1
+        class="text-4xl md:text-5xl font-extrabold tracking-tight mb-2 text-[#1b396a] drop-shadow-sm"
+      >
+        Sistema de Tutorías
+      </h1>
+
+      <p class="text-slate-600 text-lg font-medium">
+        Tecnológico Nacional de México
+      </p>
+    </div>
+
+    <!-- HUB -->
+
+    <div
+      id="hub-cards"
+      class="z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl"
+    >
+      <!-- ESTUDIANTES -->
+
+      <div
+        data-role="alumno"
+        data-title="Acceso Estudiantes"
+        class="glass-card p-8 rounded-3xl cursor-pointer hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group text-center"
+      >
+        <div
+          class="w-16 h-16 mx-auto bg-white border border-blue-100 text-[#1b396a] rounded-2xl flex items-center justify-center mb-5 group-hover:bg-[#1b396a] group-hover:text-white transition-all shadow-sm"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-8 h-8"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm0 13L5 12.27V16c0 2.21 3.58 4 7 4s7-1.79 7-4v-3.73L12 16z"
+            />
+          </svg>
+        </div>
+
+        <h3 class="text-xl font-extrabold text-[#1b396a] mb-1">
+          Portal Estudiantes
+        </h3>
+
+        <p class="text-sm text-slate-500 font-medium">Kárdex y Utilidades</p>
+      </div>
+
+      <!-- TUTORES -->
+
+      <div
+        data-role="tutor"
+        data-title="Acceso Tutores"
+        class="glass-card p-8 rounded-3xl cursor-pointer hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group text-center"
+      >
+        <div
+          class="w-16 h-16 mx-auto bg-white border border-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-8 h-8"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"
+            />
+          </svg>
+        </div>
+
+        <h3 class="text-xl font-extrabold text-slate-800 mb-1">
+          Portal Tutores
+        </h3>
+
+        <p class="text-sm text-slate-500 font-medium">Firmas de Liberación y Seguimiento</p>
+      </div>
+
+
+      <!-- ADMIN -->
+
+      <div
+        data-role="admin"
+        data-title="Jefatura Central"
+        class="glass-card p-8 rounded-3xl cursor-pointer hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group text-center"
+      >
+        <div
+          class="w-16 h-16 mx-auto bg-white border border-slate-200 text-slate-600 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-slate-700 group-hover:text-white transition-all shadow-sm"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-8 h-8"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M19.14,12.94a7.43,7.43,0,0,0,.05-.94,7.43,7.43,0,0,0-.05-.94l2.11-1.65a.5.5,0,0,0,.12-.64l-2-3.46a.5.5,0,0,0-.6-.22l-2.49,1a7.28,7.28,0,0,0-1.63-.94l-.38-2.65A.5.5,0,0,0,13.78,2H10.22a.5.5,0,0,0-.49.41L9.35,5.06a7.28,7.28,0,0,0-1.63.94l-2.49-1a.5.5,0,0,0-.6.22l-2,3.46a.5.5,0,0,0,.12.64L4.86,11.06a7.43,7.43,0,0,0-.05.94,7.43,7.43,0,0,0,.05.94L2.75,14.59a.5.5,0,0,0-.12.64l2,3.46a.5.5,0,0,0,.6.22l2.49-1a7.28,7.28,0,0,0,1.63.94l.38,2.65a.5.5,0,0,0,.49.41h3.56a.5.5,0,0,0,.49-.41l.38-2.65a7.28,7.28,0,0,0,1.63-.94l2.49,1a.5.5,0,0,0,.6-.22l2-3.46a.5.5,0,0,0-.12-.64ZM12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"
+            />
+          </svg>
+        </div>
+
+        <h3 class="text-xl font-extrabold text-slate-800 mb-1">
+          Jefatura de Tutorías
+        </h3>
+
+        <p class="text-sm text-slate-500 font-medium">Análisis Institucional</p>
+      </div>
+    </div>
+
+    <!-- LOGIN -->
+
+    <div
+      id="login-form-container"
+      class="z-10 w-full max-w-md bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white p-8 md:p-10 hidden"
+    >
+      <button
+        id="btn-volver-hub"
+        class="text-sm font-bold text-slate-400 hover:text-[#1b396a] mb-6 flex items-center"
+      >
+        <span class="mr-2 text-lg">←</span> Regresar
+      </button>
+
+      <h2 id="login-title" class="text-2xl font-extrabold text-[#1b396a] mb-6">
+        Acceso
+      </h2>
+
+      <form id="login-form" class="space-y-5">
+        <input type="hidden" id="login-role" />
+
+        <input
+          type="text"
+          id="user"
+          placeholder="Usuario o matrícula"
+          class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold"
+        />
+
+        <input
+          type="password"
+          id="pass"
+          placeholder="Contraseña"
+          class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold"
+        />
+
+        <button
+          id="loginBtn"
+          type="submit"
+          class="w-full bg-[#1b396a] text-white font-bold py-3 rounded-xl"
+        >
+          <span id="loginText">Ingresar</span>
+
+          <span id="loginLoader" class="hidden animate-pulse">
+            Validando...
+          </span>
+        </button>
+      </form>
+    </div>
+
+    <!-- TOASTS -->
+
+    <div id="toast-container" class="fixed top-6 right-6 z-50 space-y-4"></div>
+
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>

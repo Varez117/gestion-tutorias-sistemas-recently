@@ -1,0 +1,1 @@
+export const ngrokUrl = "https://tingly-tawna-irascibly.ngrok-free.dev";

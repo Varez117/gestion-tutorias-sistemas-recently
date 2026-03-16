@@ -1,0 +1,352 @@
+/* ==========================================================================
+   VARIABLES Y BASE
+   ========================================================================== */
+:root {
+  --color-primario: #1b396a;
+  --color-primario-hover: #12274b;
+  --color-fondo: #f8fafc;
+  --color-blanco: #ffffff;
+  --texto-oscuro: #1e293b;
+  --texto-gris: #64748b;
+  --texto-etiqueta: #94a3b8;
+  --borde-gris: #e2e8f0;
+
+  /* Colores de estado */
+  --color-exito: #10b981;
+  --color-exito-bg: #ecfdf5;
+  --color-peligro: #f43f5e;
+  --color-peligro-bg: #fff1f2;
+  --color-info: #3b82f6;
+  --color-info-bg: #eff6ff;
+
+  /* Colores Notas */
+  --color-nota-seguimiento: #f59e0b;
+  --color-bg-seguimiento: #fffbeb;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Montserrat", sans-serif;
+  background-color: var(--color-fondo);
+  color: var(--texto-oscuro);
+  line-height: 1.5;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ================= COMPONENTES DE ESTRUCTURA ================= */
+.mobile-header {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: var(--color-blanco);
+  border-bottom: 1px solid var(--borde-gris);
+  padding: 0 1rem;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1.5rem;
+  z-index: 60;
+}
+
+.sidebar {
+  width: 260px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-right: 1px solid var(--borde-gris);
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1.5rem;
+  flex-shrink: 0;
+  z-index: 50;
+  transition: left 0.3s ease-in-out;
+  box-shadow: 4px 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.contenedor-principal {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+  position: relative;
+}
+
+.tarjeta {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--color-blanco);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* ================= NAVEGACIÓN ================= */
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--texto-gris);
+  font-weight: 600;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.nav-btn.active {
+  background-color: var(--color-info-bg) !important;
+  color: var(--color-info) !important;
+  transform: scale(1.02);
+}
+
+.nav-btn:hover {
+  background: var(--color-info-bg);
+  color: var(--color-primario);
+}
+
+/* ================= FILTROS Y BUSQUEDA ================= */
+.nota-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid var(--borde-gris);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.nota-textarea:focus {
+  border-color: var(--color-info);
+}
+
+.btn-reset {
+  background: #f1f5f9;
+  color: var(--texto-gris);
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid var(--borde-gris);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-reset:hover {
+  background: var(--borde-gris);
+  color: #0f172a;
+  transform: rotate(-45deg);
+}
+
+/* ================= LISTADO DE ALUMNOS / ITEMS ================= */
+.item-actividad {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  border-radius: 1rem;
+  border: 1px solid var(--borde-gris);
+  background: var(--color-blanco);
+  transition: all 0.2s;
+}
+
+.item-actividad:hover {
+  transform: scale(1.01);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.act-izq {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-view-eye {
+  background: #f8fafc;
+  color: var(--texto-gris);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid var(--borde-gris);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-view-eye:hover {
+  background: var(--color-primario);
+  color: var(--color-blanco);
+  border-color: var(--color-primario);
+}
+
+.btn-evaluar {
+  background: var(--color-info-bg);
+  color: var(--color-info);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  border: 1px solid #bfdbfe;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-evaluar:hover {
+  background: var(--color-info);
+  color: var(--color-blanco);
+  transform: scale(1.05);
+}
+
+/* BADGES */
+.badge-aprobado {
+  background: var(--color-exito-bg);
+  color: var(--color-exito);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  border: 1px solid #a7f3d0;
+}
+
+.badge-reprobado {
+  background: var(--color-peligro-bg);
+  color: var(--color-peligro);
+  padding: 4px 10px; /* Corregido: antes estaba en 50px */
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  border: 1px solid #fecdd3;
+}
+
+/* ================= ESTILO DE NOTAS (CARD IMAGEN) ================= */
+.nota-card {
+  padding: 1rem 1.5rem !important;
+  border-radius: 1.25rem !important;
+  margin-bottom: 1rem !important;
+  border: 1px solid var(--borde-gris) !important;
+}
+
+.cat-nota {
+  background: var(--color-info-bg) !important;
+  border-left: 5px solid var(--color-info) !important;
+}
+.cat-seguimiento {
+  background: var(--color-bg-seguimiento) !important;
+  border-left: 5px solid var(--color-nota-seguimiento) !important;
+}
+.cat-urgente {
+  background: var(--color-peligro-bg) !important;
+  border-left: 5px solid var(--color-peligro) !important;
+}
+
+.icon-container-nota {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1.25rem;
+}
+
+.bg-icon-nota {
+  background: #dbeafe;
+  color: #2563eb;
+}
+.bg-icon-seguimiento {
+  background: #fef3c7;
+  color: #d97706;
+}
+.bg-icon-urgente {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.btn-borrar-nota-img {
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--texto-gris);
+  padding: 6px 18px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  border: 1px solid var(--borde-gris);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-borrar-nota-img:hover {
+  background: var(--color-peligro);
+  color: var(--color-blanco);
+  border-color: var(--color-peligro);
+}
+
+/* ================= CALENDARIO ================= */
+.calendar-day {
+  aspect-ratio: 1.4/1;
+  border: 1px solid var(--borde-gris);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 10px;
+  position: relative;
+  font-weight: 700;
+  transition: 0.2s;
+}
+
+.calendar-day:hover {
+  background: var(--color-info-bg);
+  border-color: var(--color-info);
+  transform: translateY(-2px);
+}
+
+.note-indicator {
+  width: 6px;
+  height: 6px;
+  background: #8b5cf6;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 6px;
+}
+
+/* ================= MEDIA QUERIES ================= */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: -100%;
+    top: 70px;
+    bottom: 0;
+    width: 260px;
+    background: white;
+  }
+  .sidebar.active {
+    left: 0;
+  }
+  .mobile-header {
+    display: flex;
+  }
+  .contenedor-principal {
+    margin-top: 70px;
+    padding: 1rem;
+  }
+  .calendar-day {
+    aspect-ratio: 1/1;
+    font-size: 0.75rem;
+  }
+}

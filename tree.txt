@@ -1,0 +1,50 @@
+Listado de rutas de carpetas para el volumen Varez IV
+El número de serie del volumen es 1AC8-3381
+D:.
+│   index.html
+│   alumno.html
+│   tutor.html
+│   encargado.html
+│   admin.html
+│   tree.txt
+│   
+├───js
+│   │   data.js
+│   │   main.js
+│   │   
+│   ├───core
+│   │       Database.js
+│   │       Auth.js
+│   │       ngrok.js
+│   │       StorageManager.js
+│   │       PDFService.js
+│   │       
+│   ├───components
+│   │       UI.js
+│   │       Chatbot.js
+│   │       FreeDaysCalendar.json
+│   │       
+│   └───pages
+│           LoginController.js
+│           AlumnoController.js
+│           TutorController.js
+│           EncargadoController.js
+│           AdminController.js
+│           
+├───assets
+│   │   null.txt
+│   │   
+│   └───img
+│           tecnm.webp
+│           tecnm.svg
+│           
+└───styles
+    ├───alumno
+    │       styles.css
+    │       
+    ├───index
+    │       toast.css
+    │       
+    └───tutor
+            styles.css
+            
