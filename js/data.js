@@ -84,9 +84,9 @@ export const mockDB = {
             evidencias: [],
             historial_actividades: [
                 { id_actividad: "A1", nombre: "Rondalla", tipo: "Académica", estado: "Suficiente" },
-                { id_actividad: "A2", nombre: "Fortalecimiento Físico", tipo: "Académica", estado: "Suficiente" },
-                { id_actividad: "E1", nombre: "Encuentro Nacional de Arte y Cultura", tipo: "Extraescolar", estado: "Excelente" },
-                { id_actividad: "E2", nombre: "Círculo de Lectura", tipo: "Extraescolar", estado: "Notable" }
+                { id_actividad: "A2", nombre: "Fort. Fis.", tipo: "Académica", estado: "Suficiente" },
+                { id_actividad: "E1", nombre: "CONCURSO DE CALAVERITA LITERARIA, CONCURSO DE OFRENDAS, CATRINES Y CATRINAS, ETC", tipo: "Extraescolar", estado: "Excelente" },
+                { id_actividad: "E2", nombre: "Circulo de Lectura", tipo: "Extraescolar", estado: "Notable" }
             ],
             actividad_actual: null
         },
