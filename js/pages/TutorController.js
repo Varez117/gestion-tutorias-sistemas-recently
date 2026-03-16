@@ -79,7 +79,7 @@ export class TutorController {
     document.getElementById("filtro-semestre").value = "all";
     document.getElementById("filtro-estatus").value = "all";
     this.renderTutorados();
-    UI.showToast("Filtros restablecidos.", "info"); // Agregado Toast
+    UI.showToast("Filtros restablecidos.", "info");
   }
 
   // --- LÓGICA AVATAR DE USUARIO ---
@@ -243,7 +243,7 @@ export class TutorController {
     });
   }
 
-  // --- LÓGICA EXPEDIENTE ---
+  // --- LÓGICA EXPEDIENTE Y VISUALIZACIÓN DE ARCHIVOS ---
   abrirExpediente(idAlumno, readOnly = false) {
     const alumno = Database.getAlumno(idAlumno);
     if (!alumno) return;
@@ -256,13 +256,26 @@ export class TutorController {
     const lista = document.getElementById("exp-lista-actividades");
     lista.innerHTML = "";
 
-    alumno.historial_actividades.forEach((act) => {
+    alumno.historial_actividades.forEach((act, index) => {
       const row = document.createElement("div");
       row.className =
         "flex justify-between items-center p-2 border-b border-slate-100 text-sm";
+
+      let fileButtonHTML = "";
+      if (act.tieneArchivo) {
+        fileButtonHTML = `
+          <button class="btn-evaluar ml-3" style="padding: 4px 8px; font-size: 0.7rem; display: flex; align-items: center; gap: 4px;" onclick="window.tutorCtrl.viewStudentFile(${alumno.id}, ${index})" title="Ver Evidencia PDF">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> 
+            PDF
+          </button>`;
+      }
+
       row.innerHTML = `
-        <div><p class="font-bold">${act.nombre}</p><p class="text-[10px] text-slate-400 uppercase">${act.tipo}</p></div>
-        <span class="${UI.esAprobada(act.estado) ? "text-emerald-600" : "text-rose-600"} font-bold">${act.estado}</span>`;
+        <div class="flex-1"><p class="font-bold">${act.nombre}</p><p class="text-[10px] text-slate-400 uppercase">${act.tipo}</p></div>
+        <div class="flex items-center justify-end">
+          <span class="${UI.esAprobada(act.estado) ? "text-emerald-600" : "text-rose-600"} font-bold">${act.estado}</span>
+          ${fileButtonHTML}
+        </div>`;
       lista.appendChild(row);
     });
 
@@ -273,6 +286,31 @@ export class TutorController {
          <button class="btn-primario" onclick="window.tutorCtrl.liberarAlumno(${alumno.id})">Liberar Tutorías</button>`;
 
     document.getElementById("modal-expediente").style.display = "flex";
+  }
+
+  async viewStudentFile(idAlumno, indexActividad) {
+    try {
+      const fileId = `${idAlumno}_act_${indexActividad}`;
+      UI.showToast("Abriendo archivo...", "info");
+      const file = await StorageManager.get(fileId);
+
+      if (file) {
+        const blob = new Blob([file], { type: "application/pdf" });
+        const url = URL.createObjectURL(blob);
+        window.open(url, "_blank") ||
+          alert(
+            "Por favor, permite las ventanas emergentes en tu navegador para ver el PDF.",
+          );
+
+        // Limpiamos la URL después de un minuto para no saturar la memoria
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+      } else {
+        UI.showToast("El documento no se encontró en la base local.", "error");
+      }
+    } catch (e) {
+      console.error("Error al recuperar el PDF del alumno:", e);
+      UI.showToast("Error al intentar abrir el archivo.", "error");
+    }
   }
 
   liberarAlumno(idAlumno) {
@@ -286,7 +324,7 @@ export class TutorController {
       estado: "Liberado",
     });
     Database.save(db);
-    UI.showToast(`¡Alumno ${alumno.matricula} liberado con éxito!`, "success"); // Agregado Toast
+    UI.showToast(`¡Alumno ${alumno.matricula} liberado con éxito!`, "success");
     this.closeModalExpediente();
     this.renderTutorados();
   }
@@ -387,7 +425,7 @@ export class TutorController {
     this.closeModalNota();
     this.renderNotas();
     this.renderCalendar();
-    UI.showToast("Nota guardada correctamente.", "success"); // Agregado Toast
+    UI.showToast("Nota guardada correctamente.", "success");
   }
 
   renderNotas() {
@@ -439,7 +477,7 @@ export class TutorController {
     );
     this.renderNotas();
     this.renderCalendar();
-    UI.showToast("Nota eliminada.", "info"); // Agregado Toast
+    UI.showToast("Nota eliminada.", "info");
   }
 
   // --- NAVEGACIÓN ---
