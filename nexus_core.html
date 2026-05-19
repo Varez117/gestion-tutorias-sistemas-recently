@@ -7,11 +7,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
     <style>
         body { margin: 0; overflow: hidden; background-color: #000000; font-family: 'Consolas', 'Courier New', monospace; color: #fff; user-select: none; }
         #canvas-container { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; }
         
-        /* HUD Técnico Unificado (Izquierda Arriba) */
         .hud-panel { position: absolute; top: 20px; left: 20px; z-index: 10; pointer-events: none; width: 340px; }
         .cyber-glass { 
             background: linear-gradient(135deg, rgba(5,5,15,0.8) 0%, rgba(0,0,5,0.95) 100%); 
@@ -28,7 +28,6 @@
         
         .controls-hint { position: absolute; bottom: 30px; width: 100%; text-align: center; color: rgba(0, 255, 136, 0.4); font-size: 0.8rem; letter-spacing: 4px; pointer-events: none; text-shadow: 0 0 5px rgba(0,255,136,0.3); }
 
-        /* Efectos para la sección de datos dinámicos */
         .data-stream-container { display: none; animation: fadeIn 0.4s ease forwards; }
         .data-stream-container.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
@@ -43,7 +42,7 @@
         <div class="text-xs space-y-4 text-gray-400 font-medium">
             <div class="flex justify-between items-center bg-green-900/10 p-2 rounded">
                 <span>RADIO SIT:</span>
-                <span class="text-green-400 font-bold tracking-widest text-shadow-sm">CONECTADO</span>
+                <span id="mqtt-status" class="text-yellow-400 font-bold tracking-widest text-shadow-sm">CONECTANDO...</span>
             </div>
             <div class="flex justify-between items-center pl-2">
                 <span>ESTADO ENTRADA:</span>
@@ -178,15 +177,14 @@
             allCurves.push(layerCurves);
         }
 
-        // --- 4. SISTEMA DE PULSOS ELÉCTRICOS (CONFIGURACIÓN) ---
-        // Aumenté el límite a 1500 para que nunca se acaben mientras fluyen
+        // --- 4. SISTEMA DE PULSOS ELÉCTRICOS ---
         const pulseCount = 60; 
         const pulseGeo = new THREE.BufferGeometry();
         const pulsePos = new Float32Array(pulseCount * 3);
         
         const pulseMat = new THREE.PointsMaterial({ 
-            size: 4.0,                 // ¡MÁS GRANDE! (Modifícalo si lo ves exagerado)
-            color: 0xffff00,            // Amarillo neón puro
+            size: 4.0,                 
+            color: 0xffff00,            
             map: circleTexture,         
             transparent: true,          
             opacity: 1.0,               
@@ -195,10 +193,7 @@
         });
         
         const pulseSystem = new THREE.Points(pulseGeo, pulseMat);
-        
-        // ¡LA SOLUCIÓN AL PROBLEMA!: Obliga a Three.js a renderizarlo siempre
         pulseSystem.frustumCulled = false; 
-        
         nnGroup.add(pulseSystem);
 
         const activePulses = [];
@@ -219,12 +214,12 @@
             }
         }
 
-        // --- 5. LÓGICA DE INTERACCIÓN Y HUD ---
+        // --- 5. LÓGICA DE INTERACCIÓN Y HUD (MQTT REEMPLAZANDO BROADCAST) ---
         let isProcessing = false;
         let tokenInterval;
         let pulseInterval;
         
-        const broadcastChannel = new BroadcastChannel('nexus_radio');
+        const mqttStatus = document.getElementById('mqtt-status');
         const sitStatus = document.getElementById('sit-status');
         const ollamaStatus = document.getElementById('ollama-status');
         const loadBar = document.getElementById('load-bar');
@@ -232,55 +227,76 @@
         const simPrompt = document.getElementById('sim-prompt');
         const tokenCounter = document.getElementById('token-counter');
         
-        broadcastChannel.onmessage = (event) => {
-            const data = event.data;
-            if (data.type === 'PROCESSING') {
-                isProcessing = true;
-                sitStatus.textContent = "SOLICITUD ENVIADA";
-                ollamaStatus.textContent = "COMPUTANDO [=====>]";
-                ollamaStatus.className = "processing-text";
-                loadBar.style.width = "100%";
-                loadBar.style.backgroundColor = "#00ff88";
-                simPrompt.textContent = data.payload || "Procesando...";
-                dynamicPanel.classList.add('active');
-                
-                let tokens = 0;
-                clearInterval(tokenInterval);
-                clearInterval(pulseInterval);
-                
-                tokenInterval = setInterval(() => {
-                    if(tokens < 98) tokens += Math.floor(Math.random() * 5);
-                    if(tokens > 99) tokens = 99;
-                    tokenCounter.textContent = tokens + "%";
-                }, 100);
+        // Conexión al broker público
+        const mqttClient = mqtt.connect('wss://broker.emqx.io:8084/mqtt');
+        const nexusTopic = 'sit_nexus_project_stand_117'; // Topic único para evitar cruces con otros
 
-                // Cada 60ms nacen 8 partículas nuevas (flujo constante)
-                pulseInterval = setInterval(() => {
-                    for(let i=0; i<8; i++) spawnPulse(); 
-                }, 50);
+        mqttClient.on('connect', () => {
+            console.log("Conectado exitosamente al broker MQTT global.");
+            mqttStatus.textContent = "CONECTADO GLOBAL";
+            mqttStatus.className = "text-green-400 font-bold tracking-widest text-shadow-sm";
+            mqttClient.subscribe(nexusTopic);
+        });
 
-            } else if (data.type === 'IDLE') {
-                isProcessing = false;
-                sitStatus.textContent = "ESPERANDO SEÑAL";
-                ollamaStatus.textContent = "EN ESPERA";
-                ollamaStatus.className = "text-cyan-300";
-                loadBar.style.width = "5%";
-                loadBar.style.backgroundColor = "#00ffff";
-                dynamicPanel.classList.remove('active');
+        mqttClient.on('error', (err) => {
+            console.error("Error MQTT:", err);
+            mqttStatus.textContent = "ERROR RED";
+            mqttStatus.className = "text-red-500 font-bold tracking-widest";
+        });
+
+        mqttClient.on('message', (topic, message) => {
+            try {
+                const data = JSON.parse(message.toString());
                 
-                clearInterval(tokenInterval);
-                clearInterval(pulseInterval);
-                tokenCounter.textContent = "100%"; 
-                
-                setTimeout(() => {
-                    for(let i=0; i<pulseCount; i++) {
-                        activePulses[i].active = false;
-                        pulseSystem.geometry.attributes.position.array[i*3] = 9999;
-                    }
-                    pulseSystem.geometry.attributes.position.needsUpdate = true;
-                }, 1500); 
+                if (data.type === 'PROCESSING') {
+                    isProcessing = true;
+                    sitStatus.textContent = "SOLICITUD ENVIADA";
+                    ollamaStatus.textContent = "COMPUTANDO [=====>]";
+                    ollamaStatus.className = "processing-text";
+                    loadBar.style.width = "100%";
+                    loadBar.style.backgroundColor = "#00ff88";
+                    simPrompt.textContent = data.payload || "Procesando...";
+                    dynamicPanel.classList.add('active');
+                    
+                    let tokens = 0;
+                    clearInterval(tokenInterval);
+                    clearInterval(pulseInterval);
+                    
+                    tokenInterval = setInterval(() => {
+                        if(tokens < 98) tokens += Math.floor(Math.random() * 5);
+                        if(tokens > 99) tokens = 99;
+                        tokenCounter.textContent = tokens + "%";
+                    }, 100);
+
+                    pulseInterval = setInterval(() => {
+                        for(let i=0; i<8; i++) spawnPulse(); 
+                    }, 50);
+
+                } else if (data.type === 'IDLE') {
+                    isProcessing = false;
+                    sitStatus.textContent = "ESPERANDO SEÑAL";
+                    ollamaStatus.textContent = "EN ESPERA";
+                    ollamaStatus.className = "text-cyan-300";
+                    loadBar.style.width = "5%";
+                    loadBar.style.backgroundColor = "#00ffff";
+                    dynamicPanel.classList.remove('active');
+                    
+                    clearInterval(tokenInterval);
+                    clearInterval(pulseInterval);
+                    tokenCounter.textContent = "100%"; 
+                    
+                    setTimeout(() => {
+                        for(let i=0; i<pulseCount; i++) {
+                            activePulses[i].active = false;
+                            pulseSystem.geometry.attributes.position.array[i*3] = 9999;
+                        }
+                        pulseSystem.geometry.attributes.position.needsUpdate = true;
+                    }, 1500); 
+                }
+            } catch (e) {
+                console.error("Payload malformado recibido");
             }
-        };
+        });
 
         // --- 6. LOOP DE ANIMACIÓN ---
         function animate() {
@@ -326,10 +342,6 @@
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
-        
-        // Disparo de prueba: Lo amplié a 15 segundos para que lo aprecies con calma
-        setTimeout(() => { broadcastChannel.postMessage({type: 'PROCESSING', payload: 'Evaluando nodos neuronales...'}); }, 1000);
-        setTimeout(() => { broadcastChannel.postMessage({type: 'IDLE'}); }, 15000);
     </script>
 </body>
 </html>
