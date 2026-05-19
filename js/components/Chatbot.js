@@ -11,12 +11,10 @@ export class Chatbot {
     this.conversationHistory = [];
     this.tutorados = [];
 
-    // Tema único en el servidor MQTT
-    this.nexusTopic = 'sit_nexus_project_stand_117';
-    // Inicializar conexión externa
+    // Tópico exclusivo y optimizado
+    this.nexusTopic = 'sit_nexus_chris_117_tec_apizaco_2026_secreto';
     this.setupNexusConnection();
 
-    // Configuración de Seguridad y Control
     this.violationFlags = 0;
     this.isWaiting = false;
     this.lockDuration = 7200000;
@@ -146,33 +144,43 @@ export class Chatbot {
   }
 
   setupEvents() {
-    const openBtn = document.getElementById("open-chat-btn");
     const chatWin = document.getElementById("chat-window");
     
-    openBtn.addEventListener("click", () => {
+    // TÉCNICA DE LIMPIEZA DE EVENTOS: Clonar y reemplazar para eliminar listeners anteriores
+    const openBtn = document.getElementById("open-chat-btn");
+    const newOpenBtn = openBtn.cloneNode(true);
+    openBtn.parentNode.replaceChild(newOpenBtn, openBtn);
+
+    const closeBtn = document.getElementById("close-chat-btn");
+    const newCloseBtn = closeBtn.cloneNode(true);
+    closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+
+    const btnSend = document.getElementById("chat-send-btn");
+    const newBtnSend = btnSend.cloneNode(true);
+    btnSend.parentNode.replaceChild(newBtnSend, btnSend);
+
+    const inputField = document.getElementById("chat-input-text");
+    const newInputField = inputField.cloneNode(true);
+    inputField.parentNode.replaceChild(newInputField, inputField);
+
+    newOpenBtn.addEventListener("click", () => {
       if (this.isLocked) {
         this.showLockToast();
         return;
       }
-
-      // IMPORTANTE: Ya no existe el window.open() aquí. El monitor no saltará.
       chatWin.style.display = "flex";
-      openBtn.style.display = "none";
+      newOpenBtn.style.display = "none";
       setTimeout(() => {
         chatWin.classList.remove("scale-0", "opacity-0");
         chatWin.classList.add("scale-100", "opacity-100");
       }, 10);
     });
 
-    document
-      .getElementById("close-chat-btn")
-      .addEventListener("click", () => this.closeChatUI());
+    newCloseBtn.addEventListener("click", () => this.closeChatUI(chatWin, newOpenBtn));
 
-    const btnSend = document.getElementById("chat-send-btn");
-    const inputField = document.getElementById("chat-input-text");
-    btnSend.addEventListener("click", () => this.handleSend(inputField));
-    inputField.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") this.handleSend(inputField);
+    newBtnSend.addEventListener("click", () => this.handleSend(newInputField));
+    newInputField.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") this.handleSend(newInputField);
     });
   }
 
@@ -343,15 +351,13 @@ ${histString}`;
     if (!disabled) input.focus();
   }
 
-  closeChatUI() {
-    const chatWin = document.getElementById("chat-window");
-    const openBtn = document.getElementById("open-chat-btn");
+  closeChatUI(chatWin = document.getElementById("chat-window"), openBtn = document.getElementById("open-chat-btn")) {
     if (!chatWin) return;
     chatWin.classList.remove("scale-100", "opacity-100");
     chatWin.classList.add("scale-0", "opacity-0");
     setTimeout(() => {
       chatWin.style.display = "none";
-      openBtn.style.display = "flex";
+      if (openBtn) openBtn.style.display = "flex";
     }, 300);
   }
 
@@ -399,7 +405,6 @@ ${histString}`;
     this.appendMessage(userText, true);
     inputField.value = "";
 
-    // SEÑAL AL NEXUS REMOTO: Emitimos mediante MQTT
     if (this.mqttClient && this.mqttClient.connected) {
         this.mqttClient.publish(this.nexusTopic, JSON.stringify({ type: 'PROCESSING', payload: userText }));
     }
@@ -452,17 +457,23 @@ ${histString}`;
     try {
       const response = await fetch(`${this.NGROK_URL}/api/chat`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true" // Header agregado para evitar que ngrok devuelva HTML y rompa el parser JSON
+        },
         body: JSON.stringify({
           model: "llama3.1",
           messages: this.conversationHistory,
           stream: false,
         }),
       });
+      
       const data = await response.json();
       const iaResponseFull = data.message.content;
+      
       if (document.getElementById("typing-" + msgId))
         document.getElementById("typing-" + msgId).remove();
+        
       if (iaResponseFull.toLowerCase().includes("baderror")) {
         this.violationFlags++;
         this.logSecurityEvent(this.violationFlags);
@@ -479,12 +490,11 @@ ${histString}`;
         content: iaResponseFull,
       });
     } catch (error) {
+      console.error(error);
       if (document.getElementById("typing-" + msgId))
         document.getElementById("typing-" + msgId).remove();
       this.appendMessage("¡Ups! Me desconecté un momento. No te vayas, en cuanto vuelva seguimos conversando 😊.", false, msgId);
     } finally {
-      
-      // SEÑAL AL NEXUS REMOTO: Fin del procesamiento
       if (this.mqttClient && this.mqttClient.connected) {
           this.mqttClient.publish(this.nexusTopic, JSON.stringify({ type: 'IDLE' }));
       }
