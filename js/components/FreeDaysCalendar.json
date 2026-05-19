@@ -1,0 +1,85 @@
+{
+  "year": 2026,
+  "dias_descanso": [
+    {
+      "fecha": "2026-01-01",
+      "nombre": "Año Nuevo",
+      "tipo": "feriado_oficial"
+    },
+    {
+      "fecha": "2026-02-02",
+      "nombre": "Día de la Constitución (movido)",
+      "tipo": "feriado_oficial"
+    },
+    {
+      "fecha": "2026-03-16",
+      "nombre": "Natalicio de Benito Juárez (movido)",
+      "tipo": "feriado_oficial"
+    },
+    {
+      "fecha": "2026-03-30",
+      "nombre": "Inicio vacaciones Semana Santa",
+      "tipo": "vacaciones"
+    },
+    {
+      "fecha": "2026-03-31",
+      "nombre": "Vacaciones Semana Santa",
+      "tipo": "vacaciones"
+    },
+    {
+      "fecha": "2026-04-01",
+      "nombre": "Vacaciones Semana Santa",
+      "tipo": "vacaciones"
+    },
+    {
+      "fecha": "2026-04-02",
+      "nombre": "Vacaciones Semana Santa",
+      "tipo": "vacaciones"
+    },
+    {
+      "fecha": "2026-04-03",
+      "nombre": "Vacaciones Semana Santa",
+      "tipo": "vacaciones"
+    },
+    {
+      "fecha": "2026-05-01",
+      "nombre": "Día del Trabajo",
+      "tipo": "feriado_oficial"
+    },
+    {
+      "fecha": "2026-05-05",
+      "nombre": "Batalla de Puebla",
+      "tipo": "suspension"
+    },
+    {
+      "fecha": "2026-05-15",
+      "nombre": "Día del Maestro",
+      "tipo": "suspension"
+    },
+    {
+      "fecha": "2026-07-16",
+      "nombre": "Inicio vacaciones de verano",
+      "tipo": "vacaciones"
+    },
+    {
+      "fecha": "2026-09-16",
+      "nombre": "Día de la Independencia",
+      "tipo": "feriado_oficial"
+    },
+    {
+      "fecha": "2026-11-02",
+      "nombre": "Día de Muertos",
+      "tipo": "suspension"
+    },
+    {
+      "fecha": "2026-11-16",
+      "nombre": "Revolución Mexicana (movido)",
+      "tipo": "feriado_oficial"
+    },
+    {
+      "fecha": "2026-12-25",
+      "nombre": "Navidad",
+      "tipo": "feriado_oficial"
+    }
+  ]
+}

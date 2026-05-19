@@ -1,0 +1,42 @@
+main.js
+
+| Código   | Uso interno             |
+| -------- | ----------------------- |
+| SYS-1F3A | Inicio general          |
+| SYS-7C9D | Post-init DB            |
+| ERR-A91X | Error en inicialización |
+| SYS-22B7 | Resolución de contexto  |
+| WRN-4E2C | Acceso inválido         |
+| SYS-9D01 | Alumno                  |
+| SYS-3AC8 | Tutor                   |
+| SYS-5F77 | Admin                   |
+| SYS-8B2E | Encargado               |
+| WRN-0Z11 | Caso no identificado    |
+
+logincontroller.js
+
+| Código   | Qué representa realmente                    |
+| -------- | ------------------------------------------- |
+| SYS-C4D2 | Instanciación de LoginController            |
+| SYS-6B1F | Intento de login (usuario + rol capturados) |
+| ERR-2X7A | Formulario login no encontrado              |
+| ERR-9Q3L | No hay tarjetas con data-role               |
+| SYS-5E8C | Click en tarjeta de rol                     |
+| SYS-A12E | Transición a vista de login                 |
+| SYS-D77B | Regreso a vista hub                         |
+
+
+PDFSERVICE
+
+| Código   | Qué representa       |
+| -------- | -------------------- |
+| SYS-F9A1 | Inicio auditoría     |
+| SYS-Q1B7 | Bloque QR            |
+| SYS-3E8D | Validación QR        |
+| SYS-H8C3 | Bloque identidad     |
+| SYS-8X1A | Validación nombre    |
+| SYS-6T2N | Validación matrícula |
+| SYS-J7D2 | Bloque académico     |
+| SYS-4P0S | Validación actividad |
+| SYS-9K3E | Validación carrera   |
+| SYS-Z9X0 | Resultado final      |

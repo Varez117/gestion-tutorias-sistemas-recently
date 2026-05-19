@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS Quantum Core | SIT 3D</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #000000; font-family: 'Consolas', 'Courier New', monospace; color: #fff; user-select: none; }
+        #canvas-container { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; }
+        
+        /* HUD Técnico Unificado (Izquierda Arriba) */
+        .hud-panel { position: absolute; top: 20px; left: 20px; z-index: 10; pointer-events: none; width: 340px; }
+        .cyber-glass { 
+            background: linear-gradient(135deg, rgba(5,5,15,0.8) 0%, rgba(0,0,5,0.95) 100%); 
+            backdrop-filter: blur(10px); 
+            border-left: 3px solid #00ff88; 
+            box-shadow: 15px 15px 40px rgba(0,0,0,0.9), inset 0 0 15px rgba(0, 255, 136, 0.15); 
+            padding: 25px; 
+            border-radius: 0 10px 10px 0;
+            transition: all 0.3s ease;
+        }
+
+        .neon-text { text-shadow: 0 0 5px #00ff88, 0 0 15px #00aaff; }
+        .processing-text { color: #00ff88; font-weight: bold; text-shadow: 0 0 10px #00ff88; }
+        
+        .controls-hint { position: absolute; bottom: 30px; width: 100%; text-align: center; color: rgba(0, 255, 136, 0.4); font-size: 0.8rem; letter-spacing: 4px; pointer-events: none; text-shadow: 0 0 5px rgba(0,255,136,0.3); }
+
+        /* Efectos para la sección de datos dinámicos */
+        .data-stream-container { display: none; animation: fadeIn 0.4s ease forwards; }
+        .data-stream-container.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+
+    <div class="hud-panel cyber-glass">
+        <h2 class="text-sm text-green-400 mb-4 font-bold tracking-[0.2em] border-b border-green-900/50 pb-2">NEXUS HUD TÉCNICO</h2>
+        
+        <div class="text-xs space-y-4 text-gray-400 font-medium">
+            <div class="flex justify-between items-center bg-green-900/10 p-2 rounded">
+                <span>RADIO SIT:</span>
+                <span class="text-green-400 font-bold tracking-widest text-shadow-sm">CONECTADO</span>
+            </div>
+            <div class="flex justify-between items-center pl-2">
+                <span>ESTADO ENTRADA:</span>
+                <span id="sit-status" class="text-cyan-300">ESPERANDO SEÑAL</span>
+            </div>
+            <div class="flex justify-between items-center pl-2">
+                <span>MODELO OLLAMA:</span>
+                <span id="ollama-status" class="text-cyan-300">EN ESPERA</span>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-800">
+                <p class="mb-2 text-[10px] tracking-widest text-gray-500">CARGA DEL NÚCLEO:</p>
+                <div class="h-2 w-full bg-gray-900 rounded overflow-hidden">
+                    <div id="load-bar" class="h-full bg-cyan-600 w-[5%] transition-all duration-300"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="dynamic-data-panel" class="data-stream-container mt-5 pt-4 border-t-2 border-dashed border-green-900/50 text-[11px] font-mono leading-relaxed text-cyan-100">
+            <p class="text-green-400 font-bold mb-2 pb-1">> TPU_01_CORE: <span class="animate-pulse">ACTIVA</span></p>
+            <p class="mb-2">> PAYLOAD: <span id="sim-prompt" class="text-white bg-blue-900/40 px-1 rounded block mt-1 break-words">...</span></p>
+            <p>> FLUJO: <span class="text-yellow-400 animate-pulse font-bold">Enrutando paquetes notables...</span></p>
+            <div class="flex justify-between mt-3 bg-black/40 p-2 rounded border border-gray-800">
+                <span class="text-cyan-500 font-bold">TOKENS GENERADOS:</span>
+                <span id="token-counter" class="text-green-400 font-bold">0%</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls-hint z-10">
+        EXPLORACIÓN LIBRE HABILITADA (ARRASTRAR / ZOOM)
+    </div>
+
+    <script>
+        // --- 1. MOTOR GRÁFICO ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x000000, 0.003); 
+        
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(-60, 10, 80);
+
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true; 
+        controls.dampingFactor = 0.05;
+        controls.autoRotate = false; 
+
+        // --- 2. GENERADOR DE TEXTURA CIRCULAR ---
+        function createCircleTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 64; canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 1)'); 
+            gradient.addColorStop(0.2, 'rgba(255, 255, 0, 1)'); 
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');     
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 64, 64);
+            return new THREE.CanvasTexture(canvas);
+        }
+        const circleTexture = createCircleTexture();
+
+        // --- 3. GENERACIÓN DE LA RED NEURONAL 3D ---
+        const nnGroup = new THREE.Group();
+        scene.add(nnGroup);
+
+        const numLayers = 5;
+        const nodesPerLayer = 9; 
+        const xSpacing = 28; 
+        const radius = 12;   
+        const startX = -((numLayers - 1) * xSpacing) / 2;
+        const palette = [0x00ff88, 0x00ffff, 0x00aaff, 0x0033ff];
+        const nodeLayers = []; 
+        const allCurves = []; 
+        const nodeGeometry = new THREE.SphereGeometry(1.2, 16, 16);
+
+        // Nodos
+        for (let i = 0; i < numLayers; i++) {
+            let layer = [];
+            for (let j = 0; j < nodesPerLayer; j++) {
+                let posY = 0, posZ = 0;
+                if (j > 0) {
+                    const angle = (j - 1) * (Math.PI * 2 / (nodesPerLayer - 1));
+                    posY = Math.cos(angle) * radius;
+                    posZ = Math.sin(angle) * radius;
+                }
+                const posX = startX + i * xSpacing;
+                const nodeColor = palette[Math.floor(Math.random() * palette.length)];
+                const material = new THREE.MeshBasicMaterial({ color: nodeColor });
+                const nodeMesh = new THREE.Mesh(nodeGeometry, material);
+                nodeMesh.position.set(posX, posY, posZ);
+                nnGroup.add(nodeMesh);
+                layer.push({ mesh: nodeMesh, color: new THREE.Color(nodeColor), position: nodeMesh.position });
+            }
+            nodeLayers.push(layer);
+        }
+
+        // Conexiones
+        const lineMaterialTemplate = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending });
+        for (let i = 0; i < numLayers - 1; i++) {
+            const currentLayer = nodeLayers[i];
+            const nextLayer = nodeLayers[i + 1];
+            const layerCurves = [];
+            for (let j = 0; j < nodesPerLayer; j++) {
+                for (let k = 0; k < nodesPerLayer; k++) {
+                    const startNode = currentLayer[j];
+                    const endNode = nextLayer[k];
+                    const curve = new THREE.CubicBezierCurve3(
+                        startNode.position,
+                        new THREE.Vector3(startNode.position.x + xSpacing / 3, startNode.position.y, startNode.position.z),
+                        new THREE.Vector3(endNode.position.x - xSpacing / 3, endNode.position.y, endNode.position.z),
+                        endNode.position
+                    );
+                    layerCurves.push({ curve: curve });
+                    const points = curve.getPoints(15); 
+                    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                    const colors = new Float32Array(points.length * 3);
+                    for (let p = 0; p < points.length; p++) {
+                        const t = p / (points.length - 1);
+                        const mixedColor = startNode.color.clone().lerp(endNode.color, t);
+                        colors[p * 3] = mixedColor.r; colors[p * 3 + 1] = mixedColor.g; colors[p * 3 + 2] = mixedColor.b;
+                    }
+                    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+                    const line = new THREE.Line(geometry, lineMaterialTemplate.clone());
+                    nnGroup.add(line);
+                }
+            }
+            allCurves.push(layerCurves);
+        }
+
+        // --- 4. SISTEMA DE PULSOS ELÉCTRICOS (CONFIGURACIÓN) ---
+        // Aumenté el límite a 1500 para que nunca se acaben mientras fluyen
+        const pulseCount = 60; 
+        const pulseGeo = new THREE.BufferGeometry();
+        const pulsePos = new Float32Array(pulseCount * 3);
+        
+        const pulseMat = new THREE.PointsMaterial({ 
+            size: 4.0,                 // ¡MÁS GRANDE! (Modifícalo si lo ves exagerado)
+            color: 0xffff00,            // Amarillo neón puro
+            map: circleTexture,         
+            transparent: true,          
+            opacity: 1.0,               
+            blending: THREE.AdditiveBlending, 
+            depthWrite: false           
+        });
+        
+        const pulseSystem = new THREE.Points(pulseGeo, pulseMat);
+        
+        // ¡LA SOLUCIÓN AL PROBLEMA!: Obliga a Three.js a renderizarlo siempre
+        pulseSystem.frustumCulled = false; 
+        
+        nnGroup.add(pulseSystem);
+
+        const activePulses = [];
+        for(let i=0; i<pulseCount; i++) {
+            activePulses.push({ active: false, t: 0, layerIdx: 0, curve: null, speed: 0 });
+            pulsePos[i*3] = 9999; 
+        }
+        pulseGeo.setAttribute('position', new THREE.BufferAttribute(pulsePos, 3));
+
+        function spawnPulse() {
+            const p = activePulses.find(p => !p.active);
+            if (p) {
+                p.active = true;
+                p.t = 0;
+                p.layerIdx = 0;
+                p.curve = allCurves[0][Math.floor(Math.random() * allCurves[0].length)].curve;
+                p.speed = 0.004 + Math.random() * 0.006; 
+            }
+        }
+
+        // --- 5. LÓGICA DE INTERACCIÓN Y HUD ---
+        let isProcessing = false;
+        let tokenInterval;
+        let pulseInterval;
+        
+        const broadcastChannel = new BroadcastChannel('nexus_radio');
+        const sitStatus = document.getElementById('sit-status');
+        const ollamaStatus = document.getElementById('ollama-status');
+        const loadBar = document.getElementById('load-bar');
+        const dynamicPanel = document.getElementById('dynamic-data-panel');
+        const simPrompt = document.getElementById('sim-prompt');
+        const tokenCounter = document.getElementById('token-counter');
+        
+        broadcastChannel.onmessage = (event) => {
+            const data = event.data;
+            if (data.type === 'PROCESSING') {
+                isProcessing = true;
+                sitStatus.textContent = "SOLICITUD ENVIADA";
+                ollamaStatus.textContent = "COMPUTANDO [=====>]";
+                ollamaStatus.className = "processing-text";
+                loadBar.style.width = "100%";
+                loadBar.style.backgroundColor = "#00ff88";
+                simPrompt.textContent = data.payload || "Procesando...";
+                dynamicPanel.classList.add('active');
+                
+                let tokens = 0;
+                clearInterval(tokenInterval);
+                clearInterval(pulseInterval);
+                
+                tokenInterval = setInterval(() => {
+                    if(tokens < 98) tokens += Math.floor(Math.random() * 5);
+                    if(tokens > 99) tokens = 99;
+                    tokenCounter.textContent = tokens + "%";
+                }, 100);
+
+                // Cada 60ms nacen 8 partículas nuevas (flujo constante)
+                pulseInterval = setInterval(() => {
+                    for(let i=0; i<8; i++) spawnPulse(); 
+                }, 50);
+
+            } else if (data.type === 'IDLE') {
+                isProcessing = false;
+                sitStatus.textContent = "ESPERANDO SEÑAL";
+                ollamaStatus.textContent = "EN ESPERA";
+                ollamaStatus.className = "text-cyan-300";
+                loadBar.style.width = "5%";
+                loadBar.style.backgroundColor = "#00ffff";
+                dynamicPanel.classList.remove('active');
+                
+                clearInterval(tokenInterval);
+                clearInterval(pulseInterval);
+                tokenCounter.textContent = "100%"; 
+                
+                setTimeout(() => {
+                    for(let i=0; i<pulseCount; i++) {
+                        activePulses[i].active = false;
+                        pulseSystem.geometry.attributes.position.array[i*3] = 9999;
+                    }
+                    pulseSystem.geometry.attributes.position.needsUpdate = true;
+                }, 1500); 
+            }
+        };
+
+        // --- 6. LOOP DE ANIMACIÓN ---
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            const positions = pulseSystem.geometry.attributes.position.array;
+            
+            for (let i = 0; i < pulseCount; i++) {
+                const p = activePulses[i];
+                if (p.active) {
+                    p.t += p.speed;
+                    if (p.t >= 1) {
+                        p.layerIdx++;
+                        if (p.layerIdx < numLayers - 1) {
+                            const nextCurves = allCurves[p.layerIdx];
+                            const validNextCurves = nextCurves.filter(c => c.curve.v0.distanceTo(p.curve.v3) < 0.1);
+                            if (validNextCurves.length > 0) {
+                                p.curve = validNextCurves[Math.floor(Math.random() * validNextCurves.length)].curve;
+                            } else {
+                                p.curve = nextCurves[Math.floor(Math.random() * nextCurves.length)].curve;
+                            }
+                            p.t = 0;
+                        } else {
+                            p.active = false;
+                            positions[i*3] = 9999; 
+                        }
+                    }
+                    if (p.active && p.curve) {
+                        const point = p.curve.getPoint(p.t);
+                        positions[i*3] = point.x;
+                        positions[i*3+1] = point.y;
+                        positions[i*3+2] = point.z;
+                    }
+                }
+            }
+            pulseSystem.geometry.attributes.position.needsUpdate = true;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        // Disparo de prueba: Lo amplié a 15 segundos para que lo aprecies con calma
+        setTimeout(() => { broadcastChannel.postMessage({type: 'PROCESSING', payload: 'Evaluando nodos neuronales...'}); }, 1000);
+        setTimeout(() => { broadcastChannel.postMessage({type: 'IDLE'}); }, 15000);
+    </script>
+</body>
+</html>
