@@ -11,11 +11,10 @@ export class Chatbot {
     this.conversationHistory = [];
     this.tutorados = [];
 
-    // Canal de radio para comunicarnos con nexus_core.html
-    this.nexusRadio = new BroadcastChannel('nexus_radio');
-    
-    // Bandera para saber si ya abrimos el monitor y no abrirlo 100 veces
-    this.nexusOpened = false;
+    // Tema único en el servidor MQTT
+    this.nexusTopic = 'sit_nexus_project_stand_117';
+    // Inicializar conexión externa
+    this.setupNexusConnection();
 
     // Configuración de Seguridad y Control
     this.violationFlags = 0;
@@ -38,6 +37,27 @@ export class Chatbot {
     }
 
     this.init();
+  }
+
+  async setupNexusConnection() {
+    if (!window.mqtt) {
+        await new Promise((resolve) => {
+            const script = document.createElement('script');
+            script.src = "https://unpkg.com/mqtt/dist/mqtt.min.js";
+            script.onload = resolve;
+            document.head.appendChild(script);
+        });
+    }
+    
+    this.mqttClient = window.mqtt.connect('wss://broker.emqx.io:8084/mqtt');
+    
+    this.mqttClient.on('connect', () => {
+        console.log("✅ SIT-SYS: Chatbot conectado al satélite NEXUS global.");
+    });
+
+    this.mqttClient.on('error', (err) => {
+        console.warn("⚠️ SIT-SYS: Advertencia de conexión al NEXUS global:", err);
+    });
   }
 
   planificarDesbloqueo(ms) {
@@ -135,12 +155,7 @@ export class Chatbot {
         return;
       }
 
-      // --- AUTO-APERTURA DEL MONITOR NEXUS ---
-      if (!this.nexusOpened) {
-          window.open("nexus_core.html", "NexusCoreMonitor", "width=900,height=600,menubar=no,toolbar=no,status=no");
-          this.nexusOpened = true; 
-      }
-
+      // IMPORTANTE: Ya no existe el window.open() aquí. El monitor no saltará.
       chatWin.style.display = "flex";
       openBtn.style.display = "none";
       setTimeout(() => {
@@ -384,8 +399,10 @@ ${histString}`;
     this.appendMessage(userText, true);
     inputField.value = "";
 
-    // SEÑAL AL NEXUS: Ahora enviamos un objeto con el mensaje del usuario
-    this.nexusRadio.postMessage({ type: 'PROCESSING', payload: userText });
+    // SEÑAL AL NEXUS REMOTO: Emitimos mediante MQTT
+    if (this.mqttClient && this.mqttClient.connected) {
+        this.mqttClient.publish(this.nexusTopic, JSON.stringify({ type: 'PROCESSING', payload: userText }));
+    }
 
     if (this.activeUser.role === "tutor") {
       const palabras = userText.toLowerCase().split(/\s+/); 
@@ -467,8 +484,10 @@ ${histString}`;
       this.appendMessage("¡Ups! Me desconecté un momento. No te vayas, en cuanto vuelva seguimos conversando 😊.", false, msgId);
     } finally {
       
-      // SEÑAL AL NEXUS: Fin del procesamiento
-      this.nexusRadio.postMessage({ type: 'IDLE' });
+      // SEÑAL AL NEXUS REMOTO: Fin del procesamiento
+      if (this.mqttClient && this.mqttClient.connected) {
+          this.mqttClient.publish(this.nexusTopic, JSON.stringify({ type: 'IDLE' }));
+      }
 
       setTimeout(() => {
         this.isWaiting = false;
